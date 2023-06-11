@@ -1,0 +1,38 @@
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-default-resources-quota
+  annotations:
+    policies.kyverno.io/title: Add Default Resources Quota
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Pods which don't specify at least resource requests are assigned a QoS class
+      of BestEffort which can hog resources for other Pods on Nodes. At a minimum,
+      all Pods should specify resource requests in order to be labeled as the QoS
+      class Burstable. This sample mutates any container in a Pod which doesn't
+      specify memory or cpu requests to apply some sane defaults.      
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+  - name: add-default-requests
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "quota not appropriate"
+      pattern:
+        spec:
+          containers:
+          - resources:
+               requests:
+                 memory: "?*"
+                 cpu: "?*"
+               limits:
+                 memory: "<300Mi"
+                 cpu: "<300m"

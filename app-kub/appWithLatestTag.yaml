@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-latest
+  labels:
+    name: poc
+spec:
+  replicas: 1
+  minReadySeconds: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: nginx-app-poc
+  template:
+    metadata:
+      name: nginx-pod-poc
+      labels:
+        type: front-node-poc
+        app: nginx-app-poc
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:latest
+          ports:
+          - containerPort: 80          
+          resources:
+            requests:
+              memory: 500Mi
+              cpu: 500m
+            limits:
+              memory: 600Mi
+              cpu: 600m
+
+
+---

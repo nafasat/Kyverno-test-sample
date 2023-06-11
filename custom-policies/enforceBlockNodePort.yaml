@@ -1,0 +1,22 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: 
+  name: restrict-nodeport
+  annotations: 
+    policies.kyverno.io/description: >-
+      A Kubernetes service of type NodePort use a host port to revice traffic from any source
+
+spec: 
+  validationFailureAction: Enforce
+  background: false
+  rules: 
+  - name: block-node-port
+    match:
+      resources:
+        kinds:
+        - Service
+    validate:
+      message: "Service of type NodePort are not allowed"
+      pattern:
+        spec:
+          type: "!NodePort"
