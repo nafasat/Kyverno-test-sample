@@ -1,1 +1,2 @@
-# Kyverno-test-sample
+# Kyvero-test-sample
+for exploring Kyverno
